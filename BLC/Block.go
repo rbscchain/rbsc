@@ -2,7 +2,6 @@ package BLC
 
 import (
 	"time"
-	_ "time"
 )
 
 type Block struct {
@@ -19,6 +18,28 @@ type Block struct {
 	//6、Nonce
 	Nonce int64
 }
+
+//将区块序列化成字节数组
+//func  (block *Block) Serialize() []byte  {
+//	var result bytes.Buffer
+//	encoder:=gob.NewEncoder(&result)
+//	err:=encoder.Encode(block)
+//	if err!=nil{
+//		log.Panic(err)
+//	}
+//	return result.Bytes()
+//}
+
+//将字节数组反序列化成区块
+//func DeserializeBlock(blockBytes []byte) *Block  {
+//	var block Block
+//	decoder:=gob.NewDecoder(bytes.NewReader(blockBytes))
+//	err:=decoder.Decode(&block)
+//	if err!=nil{
+//		log.Panic(err)
+//	}
+//	return &block
+//}
 
 //func (block *Block) SetHash() {
 //	//1、Height转化为字节数组

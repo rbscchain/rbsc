@@ -26,6 +26,18 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 	},[]byte{})
 	return data
 }
+//判断hash是否有效
+func (proofOfWork *ProofOfWork) isValid()  bool {
+	//1、proofOfWork.Block.Hash
+	//2、和target比较
+	var hashInt big.Int
+	hashInt.SetBytes(proofOfWork.Block.Hash)
+	if proofOfWork.target.Cmp(&hashInt)==1{
+		return true
+	}
+	return  false
+}
+
 
 func (proofOfWork *ProofOfWork)Run()  ([]byte,int64){
 	//1、Block的属性拼接为字节数组
