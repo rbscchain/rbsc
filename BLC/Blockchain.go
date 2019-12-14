@@ -21,38 +21,58 @@ type Blockchain struct {
 	DB  *bolt.DB
 }
 
-//遍历输出所有区块的信息
+//迭代器
+func  (blockchain *Blockchain)Iterator() *BlockchainIterator  {
+	return &BlockchainIterator{blockchain.Tip,blockchain.DB}
+}
+
+
 func (blockchain *Blockchain) PrintChain() {
-	var block *Block
-	var currentHash []byte = blockchain.Tip
-	for {
-		err := blockchain.DB.View(func(tx *bolt.Tx) error {
-			//1、获取表
-			b := tx.Bucket([]byte(blockTableName))
-			if b != nil {
-				//2、获取当前区块的字节数据
-				blockBytes := b.Get(currentHash)
-				block = DeserializeBlock(blockBytes)
-				fmt.Printf("Height:%d\n", block.Height)
-				fmt.Printf("PrevBlockHash:%x\n", block.PrevBlockHash)
-				fmt.Printf("Data:%s\n", block.Data)
-				fmt.Printf("Timestamp:%d\n", block.Timestamp)
-				fmt.Printf("Hash:%x\n", block.Hash)
-				fmt.Printf("Nonce:%d\n", block.Nonce)
-			}
-			return nil
-		})
-		if err != nil {
-			log.Panic(err)
-		}
+	blockchainIterator:=blockchain.Iterator()
+	for{
+		block:=blockchainIterator.Next()
 		var hashInt big.Int
 		hashInt.SetBytes(block.PrevBlockHash)
-		if big.NewInt(0).Cmp(&hashInt) == 0 {
-			break
+		if big.NewInt(0).Cmp(&hashInt)==0{
+			break;
 		}
-		currentHash = block.PrevBlockHash
 	}
+
 }
+
+
+//遍历输出所有区块的信息
+//func (blockchain *Blockchain) PrintChain() {
+//	var block *Block
+//	var currentHash []byte = blockchain.Tip
+//	for {
+//		err := blockchain.DB.View(func(tx *bolt.Tx) error {
+//			//1、获取表
+//			b := tx.Bucket([]byte(blockTableName))
+//			if b != nil {
+//				//2、获取当前区块的字节数据
+//				blockBytes := b.Get(currentHash)
+//				block = DeserializeBlock(blockBytes)
+//				fmt.Printf("Height:%d\n", block.Height)
+//				fmt.Printf("PrevBlockHash:%x\n", block.PrevBlockHash)
+//				fmt.Printf("Data:%s\n", block.Data)
+//				fmt.Printf("Timestamp:%d\n", block.Timestamp)
+//				fmt.Printf("Hash:%x\n", block.Hash)
+//				fmt.Printf("Nonce:%d\n", block.Nonce)
+//			}
+//			return nil
+//		})
+//		if err != nil {
+//			log.Panic(err)
+//		}
+//		var hashInt big.Int
+//		hashInt.SetBytes(block.PrevBlockHash)
+//		if big.NewInt(0).Cmp(&hashInt) == 0 {
+//			break
+//		}
+//		currentHash = block.PrevBlockHash
+//	}
+//}
 
 //增加区块到区块链里面
 func (blockchain *Blockchain) AddBlockToBlockchain(data string) {
